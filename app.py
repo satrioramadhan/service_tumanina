@@ -5,6 +5,7 @@ from flask_jwt_extended import JWTManager, create_access_token, jwt_required, ge
 import os
 from dotenv import load_dotenv
 import requests
+from datetime import timedelta
 
 # Load environment variables
 load_dotenv()
@@ -14,6 +15,8 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("SQLALCHEMY_DATABASE_URI")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['JWT_SECRET_KEY'] = os.getenv("JWT_SECRET_KEY")
+app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(days=30)  # Token berlaku 30 hari
+app.config['JWT_REFRESH_TOKEN_EXPIRES'] = timedelta(days=60) 
 
 # Initialize Extensions
 db = SQLAlchemy(app)
@@ -200,7 +203,7 @@ def submit_sentiment():
         if not nama or not review:
             return jsonify({"msg": "Nama dan ulasan wajib diisi."}), 400
 
-        web_lama_url = "http://tumanina.me/sentimen/add_review"
+        web_lama_url = "https://tumanina.me/sentimen/add_review"
         payload = {
             "name": nama,
             "text": review
